@@ -43,7 +43,7 @@ SUBLABEL_COPY = {
     "STOCK MISMATCH": "Quantity Exceeds Stock",
     "ITEM OUT OF STOCK": "Item Out Of Stock",
     "NONEXISTENT ITEM": "Unknown Item",
-    "INVALID QUANTITATIVE FIELD": "INVALID QUANTITATIVE FIELD",
+    "INVALID QUANTITY": "Invalid Quantity",
 }
 
 UPLOAD_TYPES = sorted({ext.lstrip(".") for ext in ALLOWED_EXTENSIONS})
@@ -118,20 +118,14 @@ def save_upload(uploaded_file) -> str:
 def render_header() -> None:
     inject_html(
         """
-        <header class="masthead">
-            <div class="masthead-top">
-                <div class="crest" aria-hidden="true">A</div>
-                <div>
-                    <h1 class="company-name">Acme Corp</h1>
-                    <p class="division">Manufacturing · Accounts Payable</p>
-                </div>
-            </div>
-            <p class="system-name">Invoice Processing</p>
+        <div class="hero">
+            <div class="eyebrow">Acme Corp</div>
+            <h1 class="brand-title">Invoice Processing</h1>
             <p class="subtitle">
                 Acme matches each vendor invoice to plant inventory and issues a pay-or-reject
                 decision before payment is released.
             </p>
-        </header>
+        </div>
         """
     )
 

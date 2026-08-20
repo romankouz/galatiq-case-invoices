@@ -159,71 +159,34 @@ div[data-testid="stButton"] {
     color: #1F3A5F !important;
 }
 
-/* --- Official letterhead --- */
-.masthead {
+/* --- Header --- */
+.hero {
     margin: 0;
-    background: #1F3A5F;
-    color: #F7F4EA;
-    border-radius: 16px;
-    padding: 24px 28px 22px;
-    border-bottom: 5px solid #C9A227;
-    box-shadow: 0 8px 24px rgba(31, 58, 95, 0.18);
 }
 
-.masthead-top {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-}
-
-.crest {
-    width: 52px;
-    height: 52px;
-    flex-shrink: 0;
-    border: 2px solid #C9A227;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+.eyebrow {
     font-family: "Libre Baskerville", Georgia, serif;
-    font-size: 1.45rem;
-    font-weight: 700;
-    color: #C9A227;
-    background: #163056;
-}
-
-.company-name {
-    font-family: "Libre Baskerville", Georgia, serif !important;
-    font-size: 2.05rem !important;
-    font-weight: 700 !important;
-    letter-spacing: 0.08em;
+    font-size: 2.75rem;
+    letter-spacing: 0.04em;
     text-transform: uppercase;
-    color: #F7F4EA !important;
-    margin: 0 !important;
+    color: #1F3A5F;
+    font-weight: 700;
+    margin: 0 0 8px 0;
     line-height: 1.15;
 }
 
-.division {
-    margin: 6px 0 0 0 !important;
-    font-size: 0.72rem;
+.brand-title {
+    font-size: 2rem;
+    margin: 0 0 8px 0;
     font-weight: 700;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    color: #C9A227 !important;
+    line-height: 1.2;
 }
 
-.system-name {
-    margin: 16px 0 8px 0 !important;
-    font-size: 1.05rem;
-    font-weight: 600;
-    color: #F7F4EA !important;
-}
-
-.masthead .subtitle {
-    color: #D7E0EC !important;
-    font-size: 0.98rem;
+.subtitle {
+    color: #4A5568;
+    font-size: 1rem;
     line-height: 1.55;
-    margin: 0 !important;
+    margin: 0;
 }
 
 /* --- Cards share one size and padding --- */

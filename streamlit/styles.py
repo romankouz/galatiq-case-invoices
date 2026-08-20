@@ -159,24 +159,60 @@ div[data-testid="stButton"] {
     color: #1F3A5F !important;
 }
 
-/* --- Header --- */
+/* --- Header: company lockup, then page name --- */
 .hero {
     margin: 0;
 }
 
-.eyebrow {
+.company-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.mark {
+    width: 56px;
+    height: 56px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #1F3A5F;
+    color: #FBF7F0;
     font-family: "Libre Baskerville", Georgia, serif;
-    font-size: 2.75rem;
-    letter-spacing: 0.04em;
+    font-size: 1.85rem;
+    font-weight: 700;
+    border-radius: 8px;
+    box-shadow: inset 0 0 0 2px #C4A574;
+}
+
+.wordmark-name {
+    font-family: "Libre Baskerville", Georgia, serif;
+    font-size: 2.15rem;
+    font-weight: 700;
+    letter-spacing: 0.16em;
     text-transform: uppercase;
     color: #1F3A5F;
-    font-weight: 700;
-    margin: 0 0 8px 0;
-    line-height: 1.15;
+    line-height: 1;
+}
+
+.wordmark-entity {
+    margin-top: 6px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: #8B6F45;
+}
+
+.header-rule {
+    height: 1px;
+    margin: 16px 0;
+    background: linear-gradient(90deg, #C4A574 0%, #1F3A5F 45%, transparent 100%);
 }
 
 .brand-title {
-    font-size: 2rem;
+    font-size: 1.35rem;
     margin: 0 0 8px 0;
     font-weight: 700;
     line-height: 1.2;
@@ -187,6 +223,7 @@ div[data-testid="stButton"] {
     font-size: 1rem;
     line-height: 1.55;
     margin: 0;
+    max-width: 36rem;
 }
 
 /* --- Cards share one size and padding --- */

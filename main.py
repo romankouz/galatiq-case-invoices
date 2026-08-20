@@ -19,17 +19,24 @@ from src.agents.auditor import audit_invoice
 from src.agents.data_consolidator import consolidate_data
 from src.agents.data_ingestor import ingest_unstructured_file
 from src.model_schemas.input import InputState
-from src.model_schemas.invoice import InvoiceState
 from src.model_schemas.output import OutputState
 from src.model_schemas.overall import OverallState
 
 from src.evals.golden_dataset_verification import evaluate_golden_dataset, get_golden_dataset_results
 
 from src.tools.ingest_file import ingest_file
+from src.validations.finances import verify_total, verify_tax_calculation, verify_quantities
+from src.validations.date_time_validation import validate_datetime_str
 from src.tools.query_inventory import query_inventory
 from src.constants.constants import INVOICES_DIR, RESULTS_DIR
 
-AVAILABLE_TOOLS = [query_inventory]
+AVAILABLE_TOOLS = [
+    query_inventory,
+    verify_total,
+    verify_tax_calculation,
+    verify_quantities,
+    validate_datetime_str
+]
 TOOLS_BY_NAME = {tool.name: tool for tool in AVAILABLE_TOOLS}
 
 def tool_node(state: OverallState) -> dict:

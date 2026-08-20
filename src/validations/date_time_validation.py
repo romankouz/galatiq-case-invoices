@@ -1,5 +1,8 @@
 from datetime import datetime
 
+from langchain.tools import tool
+
+@tool
 def validate_datetime_str(datetime_str: str) -> bool:
     try:
         valid_formats = [

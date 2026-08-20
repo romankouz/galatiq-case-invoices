@@ -11,6 +11,8 @@ from src.model_schemas.output import OutputState
 from src.model_schemas.overall import OverallState
 from src.constants.system_prompts import AUDITOR_PROMPT
 from src.tools.query_inventory import query_inventory
+from src.validations.finances import verify_total, verify_tax_calculation, verify_quantities
+from src.validations.date_time_validation import validate_datetime_str
 
 load_dotenv()
 
@@ -21,7 +23,7 @@ def setup_auditor_agent() -> ChatXAI:
         model_provider="xai",
         temperature=0.0
     )
-    auditor_agent = auditor_agent.bind_tools([query_inventory])
+    auditor_agent = auditor_agent.bind_tools([query_inventory, verify_total, verify_tax_calculation, verify_quantities, validate_datetime_str])
     return auditor_agent
 
 def audit_invoice(state: OverallState) -> dict:

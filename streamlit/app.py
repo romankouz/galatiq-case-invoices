@@ -119,11 +119,17 @@ def render_header() -> None:
     inject_html(
         """
         <div class="hero">
-            <div class="eyebrow">Acme Corp</div>
+            <div class="company-header">
+                <div class="mark" aria-hidden="true">A</div>
+                <div class="wordmark">
+                    <div class="wordmark-name">Acme</div>
+                    <div class="wordmark-entity">Corporation</div>
+                </div>
+            </div>
+            <div class="header-rule"></div>
             <h1 class="brand-title">Invoice Processing</h1>
             <p class="subtitle">
-                Acme matches each vendor invoice to plant inventory and issues a pay-or-reject
-                decision before payment is released.
+                Upload a vendor invoice. Acme reviews it and decides whether it should be paid.
             </p>
         </div>
         """

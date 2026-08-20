@@ -131,18 +131,13 @@ To run the system, you can use the following command-line options (as parsed in 
   python main.py --test-only
   ```
 
-You can mix and match these flags as needed. For example, to process a single invoice and specify both output and model:
-```bash
-python main.py --invoice_path=data/invoices/invoice5.pdf --output_path=results/result5.json --model_name="my-special-model" --verbose
-```
+You can mix and match these flags as needed; they all work completely independently. If you run the script **without any flags**, it will process all invoices found in the default `data/invoices/` folder.
 
-If you run the script **without any flags**, it will process all invoices found in the default `data/invoices/` folder.
-
-Output should include structured logs and results.
+All results are written to the invoices table in the SQLite database `data/invoices.db`.
 
 ## UI Experience
 
-You can manually upload your invoices (on this dashboard) to see the multi-agent in action for yourself!
+You can manually upload your invoices [on this dashboard](https://romankouz-galatiq-case-invoices.streamlit.app/) to see the multi-agent in action for yourself!
 
 ## Future Work
 

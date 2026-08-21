@@ -226,7 +226,7 @@ Here is how the system performed when trying to predict the sublabel (i.e. the c
 |---|---|---|---|:---:|:---:|
 | INV-1001 | `.txt` | SUCCESS | SUCCESS |   ✅   |   🟡   |
 | INV-1002 | `.txt` | STOCK MISMATCH OR ITEM OUT OF STOCK | STOCK MISMATCH OR ITEM OUT OF STOCK |   ✅   |   🟡   |
-| INV-1003 | `.txt` | ITEM OUT OF STOCK or MISSING OR SUSPICIOUS FIELD(S) | STOCK MISMATCH OR ITEM OUT OF STOCK |   ✅   |   🟡   |
+| INV-1003 | `.txt` | STOCK MISMATCH OR ITEM OUT OF STOCK or MISSING OR SUSPICIOUS FIELD(S) | STOCK MISMATCH OR ITEM OUT OF STOCK |   ✅   |   🟡   |
 | INV-1004 | `.json` | SUCCESS | SUCCESS |   ✅   |   🟡   |
 | INV-1005 | `.json` | STOCK MISMATCH OR ITEM OUT OF STOCK | STOCK MISMATCH OR ITEM OUT OF STOCK |   ✅   |        |
 | INV-1006 | `.csv` | SUCCESS | SUCCESS |   ✅   |   🟡   |

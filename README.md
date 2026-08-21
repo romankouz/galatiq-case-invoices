@@ -21,17 +21,19 @@ Our current MVP multi-agent solution handles four stages:
 
 2. **Validation** — Our solution has been validated against the invoices in `data/invoices` acting as our golden dataset. Ideally, we would generate more synthetic examples to further stress test our performance on wider distribution of possible invoices. For now, we can demonstrate that our agent is able to identify a pay/reject decision with 100% accuracy on the golden dataset and identify the processing result sublabel with X% accuracy.
 
-3. **Approval** — Simulate VP-level review with rule-based decision-making (e.g., invoices over $10K require additional scrutiny). The agent should reason through approval/rejection with a reflection or critique loop.
+3. **Approval** — Our agentic system has a data consolidator that populates the required fields of an invoice, an auditor who inspects the consolidated and raw data to make inferences about any potential red flags. Once the auditor feels comfortable with their assessment, and approver agent double checks the auditors work and compiles a final decision based on all available data.
 
-4. **Payment** — If the multi-agent system determines a payment can proceed safely, the payment function is called and the event is logged to our monitoring database. A similar action is performed in the event an invoice needs to be rejected, with explicit notes citing the reason for the rejection.
+4. **Payment** — Payments are processed upon the approver agent approving the invoice. Payments AND rejections are logged to our invoices table in `data/invoices.db`. 
 
 ## Technical Solution
 
 Our approach is written primarily in Python, leveraging LangGraph as our orchestration framework and xAI's (MODEL NAME) as the primary LLM our agents rely on. 
 
-LangGraph was chosen over other orchestrations (including LangChain) because the agentic system makes update to a shared and structured state. Furthermore, tool calls can be handled with more control. Tool calls can be rejected for undesirable inputs and are directly embedded into the control flow of the system. For our purposes of outputing a rigid structure for consistent invoice evlaution, LangChain is the best (OPTION ON THE MARKET RIGHT NOW).
+LangGraph was chosen over other orchestrations (including LangChain) because the agentic system makes update to a shared and structured state. Furthermore, tool calls can be handled with more control. Tool calls can be rejected for undesirable inputs and are directly embedded into the control flow of the system. For our purposes of outputing a rigid structure for consistent invoice evlaution, LangChain is an incredible candidate.
 
-For now, our agent runs locally, saving results in json files for simple evaluation and logging events in locally stored SQLite databases.
+For now, our agent runs locally, saving results in json files for simple evaluation and logging events in locally stored SQLite databases. 
+
+Our example dataset also contains replicates. For security purposes, we do not ever upsert an invoice. Once an invoice number is processed, no invoice with the same identifier can go in its place. A new invoice with a new invoice number MUST be submitted. This way, retrieving an erroneous invoice is always possible without mutating or creating nested schemas.
 
 ### Architecture
 
@@ -42,55 +44,91 @@ For now, our agent runs locally, saving results in json files for simple evaluat
 🟥 **Red rectangles** = Tools  
 🟪 **Purple rectangles** = Agents
 
-- **LLM Integration**: Use xAI's Grok as the core reasoning engine (via the xAI API at https://grok.x.ai). Other models are acceptable if you don't have an API key.
-- **Multi-Agent Orchestration**: Use a framework such as LangGraph, CrewAI, AutoGen, or a custom solution.
-- **Agent Capabilities**: Function calling / tool use, structured outputs, and self-correction loops.
-- **Runtime**: Assume no internet for external APIs — simulate everything locally.
-- **Tech Stack**: Python (preferred), with libraries like `langchain`, `crewai`, `autogen`, `pdfplumber`, `PyMuPDF`, etc. Run locally — no cloud deployment.
+Every invoice gets processed by ingestor script. The ingester script determines one of three routes based on the document and features extracted. If the document type is not obviously tabular (.txt, .pdf, .docx, .md), then the data is considered "unstructured". It is converted into markdown using Microsoft's `markitdown` package and sent to the Ingestor Agent. The ingestor reads through the files and tries to populate the InvoiceState schema (see below).
+
+In the event the data IS tabular/structured (.csv, .json, .xml, .xlsx), then our ingestor script will determine if the file is tall or wide, and then attempt to infill the InvoiceState schema in one shot. If it fails to do it or any of the following fields are missing (invoice_number, line_items, vendor, total), then the data is considered "structured". The data is sent to the Consolidator Agent to ensure that the fields of the InvoiceState are populated and of the correct type. The outputs from the ingestor also get sent to the consolidator for extra scrutiny of the structured data generated from unstructured sources. 
+
+<details>
+<summary><strong>📄 InvoiceState YAML Schema (<code>src/model_schemas/invoice.py</code>)</strong></summary>
+
+```yaml
+InvoiceState:
+  type: object
+  description: >
+    Parsed invoice fields after unstructured or structured ingestion.
+    All fields are optional and may be None if not found in the document.
+  properties:
+    invoice_number:
+      type: string
+      description: Invoice number, usually with the "INV-" prefix. REQUIRED field for downstream automation.
+    revision:
+      type: string
+      description: Revision number of the invoice, if applicable.
+    vendor:
+      type: string
+      description: Vendor (seller) name. REQUIRED field.
+    vendor_address:
+      type: string
+      description: Vendor's business address.
+    bill_to:
+      type: string
+      description: "Bill to" address for the recipient/purchaser.
+    date:
+      type: string
+      description: Invoice issue date (ISO or original format).
+    due_date:
+      type: string
+      description: Payment due date (ISO or original format).
+    line_items:
+      type: array
+      items: 
+        $ref: "#/LineItemState"
+      description: List of invoice line items. REQUIRED field.
+    subtotal:
+      type: number
+      description: Subtotal of all line items before tax, shipping, and fees.
+    tax_rate:
+      type: number
+      description: Tax rate as a decimal (e.g., 0.10 for 10%).
+    tax_amount:
+      type: number
+      description: Total tax amount in nominal value.
+    shipping:
+      type: number
+      description: Shipping/handling amount, if separated from line items.
+    total:
+      type: number
+      description: Total invoice amount. REQUIRED field.
+    currency:
+      type: string
+      description: Three-letter currency code or currency symbol.
+    payment_terms:
+      type: string
+      description: Terms for payment (e.g., "Net 30", "Due on receipt").
+    notes:
+      type: string
+      description: Additional instructions or comments on the invoice.
+
+LineItemState:
+  type: object
+  description: |
+    (See `LineItemState` definition; fields not expanded here.)
+```
+</details>
+
+
+
+Once the consolidator is finished, the Auditor Agent has all the relevant information about the invoice to start performing auditing checks. In **extremely** rare conditions, processing the file during `ingest_file` allows us to fully populate the InvoiceState in one-shot and we go straight to our Auditor Agent directly. It has tools to verify tax math, verify total invoice amount, calculate total invoice amount, perform an inventory check, verify date validity, and combine line items. With these tools, the auditor creates a report with a recommended course of action.
+
+Lastly, the Approver Agent transforms the auditor's output into the OutputState schema and extracts the invoice processing decision, failure type category, reason for conclusion, and infers the confidence of the auditor's assessment.
+
+With this, we have enough information to programatically handle invoices and assess our performance.
 
 ## Results
 
 ### Golden Dataset
 
-| Invoice Number | File Format | Expected Processing Result | Our Output | Match? |
-|---|---|---|---|---|
-| INV-1001 | `.txt` | SUCCESS | SUCCESS | ✅ |
-| INV-1002 | `.txt` | FAILURE | FAILURE | ✅ |
-| INV-1003 | `.txt` | FAILURE | FAILURE | ✅ |
-| INV-1004 | `.json` | SUCCESS | SUCCESS | ✅ |
-| INV-1005 | `.json` | FAILURE | FAILURE | ✅ |
-| INV-1006 | `.csv` | SUCCESS | SUCCESS | ✅ |
-| INV-1007 | `.csv` | FAILURE | FAILURE | ✅ |
-| INV-1008 | `.txt` | FAILURE | FAILURE | ✅ |
-| INV-1009 | `.json` | FAILURE | FAILURE | ✅ |
-| INV-1010 | `.txt` | SUCCESS | SUCCESS | ✅ |
-| INV-1011 | `.pdf` | SUCCESS | SUCCESS | ✅ |
-| INV-1012 | `.pdf` | FAILURE | FAILURE | ✅ |
-| INV-1013 | `.pdf` | FAILURE | FAILURE | ✅ |
-| INV-1014 | `.xml` | SUCCESS | SUCCESS | ✅ |
-| INV-1015 | `.csv` | SUCCESS | SUCCESS | ✅ |
-| INV-1016 | `.json` | FAILURE | FAILURE | ✅ |
-
-| Invoice Number | File Format | Expected Processing Sublabel | Our Output | Match? |
-|---|---|---|---|---|
-| INV-1001 | `.txt` | SUCCESS | SUCCESS | ✅ |
-| INV-1002 | `.txt` | STOCK MISMATCH | STOCK MISMATCH | ✅ |
-| INV-1003 | `.txt` | ITEM OUT OF STOCK or MISSING OR SUSPICIOUS FIELD(S) | ITEM OUT OF STOCK | ✅ |
-| INV-1004 | `.json` | SUCCESS | SUCCESS | ✅ |
-| INV-1005 | `.json` | STOCK MISMATCH | STOCK MISMATCH | ✅ |
-| INV-1006 | `.csv` | SUCCESS | SUCCESS | ✅ |
-| INV-1007 | `.csv` | STOCK MISMATCH | STOCK MISMATCH | ✅ |
-| INV-1008 | `.txt` | NONEXISTENT ITEM | NONEXISTENT ITEM | ✅ |
-| INV-1009 | `.json` | INVALID QUANTITATIVE FIELD or MISSING OR SUSPICIOUS FIELD(S) | MISSING OR SUSPICIOUS FIELD(S) | ✅ |
-| INV-1010 | `.txt` | SUCCESS | SUCCESS | ✅ |
-| INV-1011 | `.pdf` | SUCCESS | SUCCESS | ✅ |
-| INV-1012 | `.pdf` | SUCCESS | FAILURE | ✅ |
-| INV-1013 | `.pdf` | FAILURE | FAILURE | ✅ |
-| INV-1014 | `.xml` | FAILURE | SUCCESS | ✅ |
-| INV-1015 | `.csv` | SUCCESS | SUCCESS | ✅ |
-| INV-1016 | `.json` | FAILURE | FAILURE | ✅ |
-
-**Why this matters:** The sample invoices are designed to test your validation logic against this database. For example:
+While our example invoices contain 16 examples, only 8 of them were human-labeled for alignment. The golden dataset consists of the 8 invoices discussed in the table below:
 
 | Scenario | Invoice | What should happen |
 |---|---|---|
@@ -100,7 +138,106 @@ For now, our agent runs locally, saving results in json files for simple evaluat
 | Item not in database at all | INV-1008 (SuperGizmo, MegaSprocket), INV-1016 (WidgetC) | Flagged as unknown item |
 | Invalid data | INV-1009 (negative quantity) | Flagged as data integrity issue |
 
-You may extend the seed data with additional items or columns (e.g., unit price, category) to support richer validation — the above is the minimum needed to exercise the provided test invoices. If you want your system to also validate pricing or vendor information, consider adding tables for those as well.
+With this knowledge, we assess our performance on ALL 16 outcomes, but matching the golden dataset is prioritized. The other 8 examples are evaluated against the expected outcomes we believe match the behavior of the golden dataset.
+
+** Pay/Reject Results**
+
+| Invoice Number | File Format | Expected Processing Result | Our Output | Match? | Golden Example? |
+|---|---|---|---|---|---|
+| INV-1001 | `.txt` | SUCCESS | SUCCESS | ✅ | 🟡 |
+| INV-1002 | `.txt` | FAILURE | FAILURE | ✅ | 🟡 |
+| INV-1003 | `.txt` | FAILURE | FAILURE | ✅ | 🟡 |
+| INV-1004 | `.json` | SUCCESS | SUCCESS | ✅ | 🟡 |
+| INV-1005 | `.json` | FAILURE | FAILURE | ✅ |  |
+| INV-1006 | `.csv` | SUCCESS | SUCCESS | ✅ | 🟡 |
+| INV-1007 | `.csv` | FAILURE | FAILURE | ✅ |  |
+| INV-1008 | `.txt` | FAILURE | FAILURE | ✅ | 🟡 |
+| INV-1009 | `.json` | FAILURE | FAILURE | ✅ | 🟡 |
+| INV-1010 | `.txt` | SUCCESS | SUCCESS | ✅ |  |
+| INV-1011 | `.pdf` | SUCCESS | SUCCESS | ✅ |  |
+| INV-1012 | `.pdf` | FAILURE | FAILURE | ✅ |  |
+| INV-1013 | `.pdf` | FAILURE | FAILURE | ✅ |  |
+| INV-1014 | `.xml` | SUCCESS | SUCCESS | ✅ |  |
+| INV-1015 | `.csv` | SUCCESS | SUCCESS | ✅ |  |
+| INV-1016 | `.json` | FAILURE | FAILURE | ✅ | 🟡 |
+
+Our binary results indicate a good initial performance, but how can we know if our agent is making these decision for the right reasons? Our final output isn't just a go/no-go decision for processing invoices. Our system outputs the following schema:
+
+```yaml
+OutputState:
+  type: object
+  description: The final output of our agentic system for invoice processing.
+  properties:
+    invoice_number:
+      type: string
+      description: Unique identifier for the invoice.
+    vendor_name:
+      type: string
+      description: Name of the vendor associated with the invoice.
+    amount:
+      type: number
+      format: float
+      description: The total monetary amount of the invoice.
+    processing_result:
+      type: string
+      enum:
+        - SUCCESS
+        - FAILURE
+      description: >
+        Binary outcome indicating if the invoice was processed successfully
+        ("SUCCESS") or failed validation ("FAILURE").
+    processing_result_sublabel:
+      type: string
+      enum:
+        - SUCCESS
+        - STOCK MISMATCH OR ITEM OUT OF STOCK
+        - NONEXISTENT ITEM
+        - INVALID QUANTITATIVE FIELD
+        - MISSING OR SUSPICIOUS FIELD(S)
+      description: >
+        More detailed reason for the processing result.
+        Indicates specific failure or success conditions.
+    reason:
+      type: string
+      description: Human-readable explanation for the result.
+    confidence:
+      type: number
+      format: float
+      minimum: 0
+      maximum: 1
+      description: Confidence score (0 to 1) representing system certainty.
+  required:
+    - invoice_number
+    - vendor_name
+    - amount
+    - processing_result
+    - processing_result_sublabel
+    - reason
+    - confidence
+```
+This YAML schema matches the `OutputState` model as defined in `src/model_schemas/output.py`.  
+It ensures structured, interpretable results for each invoice processed by the system. We can back out the outcome, category for the decision, additional agentic reasoning, and a confidence score. With these outputs, we can not only automate invoice processing, but programatically determine based on categories and confidence scores how to bring a human in the loop if it becomes necessary.
+
+Here is how the system performed when trying to predict the sublabel (i.e. the category of the failure).
+
+| Invoice Number | File Format | Expected Processing Sublabel | Our Output | Match? | Golden Example? |
+|---|---|---|---|---|---|
+| INV-1001 | `.txt` | SUCCESS | SUCCESS | ✅ | 🟡 |
+| INV-1002 | `.txt` | STOCK MISMATCH OR ITEM OUT OF STOCK | STOCK MISMATCH OR ITEM OUT OF STOCK | ✅ | 🟡 |
+| INV-1003 | `.txt` | ITEM OUT OF STOCK or MISSING OR SUSPICIOUS FIELD(S) | STOCK MISMATCH OR ITEM OUT OF STOCK | ✅ | 🟡 |
+| INV-1004 | `.json` | SUCCESS | SUCCESS | ✅ | 🟡 |
+| INV-1005 | `.json` | STOCK MISMATCH OR ITEM OUT OF STOCK | STOCK MISMATCH OR ITEM OUT OF STOCK | ✅ |  |
+| INV-1006 | `.csv` | SUCCESS | SUCCESS | ✅ | 🟡 |
+| INV-1007 | `.csv` | STOCK MISMATCH OR ITEM OUT OF STOCK | STOCK MISMATCH OR ITEM OUT OF STOCK | ✅ |  |
+| INV-1008 | `.txt` | NONEXISTENT ITEM | NONEXISTENT ITEM | ✅ | 🟡 |
+| INV-1009 | `.json` | INVALID QUANTITATIVE FIELD or MISSING OR SUSPICIOUS FIELD(S) | MISSING OR SUSPICIOUS FIELD(S) | ✅ | 🟡 |
+| INV-1010 | `.txt` | SUCCESS | SUCCESS | ✅ |  |
+| INV-1011 | `.pdf` | SUCCESS | SUCCESS | ✅ |  |
+| INV-1012 | `.pdf` | SUCCESS | SUCCESS | ✅ |  |
+| INV-1013 | `.pdf` | STOCK MISMATCH OR ITEM OUT OF STOCK | STOCK MISMATCH OR ITEM OUT OF STOCK | ✅ |  |
+| INV-1014 | `.xml` | SUCCESS | SUCCESS | ✅ |  |
+| INV-1015 | `.csv` | SUCCESS | SUCCESS | ✅ |  |
+| INV-1016 | `.json` | NONEXISTENT ITEM | NONEXISTENT ITEM | ✅ | 🟡 |
 
 ## Running the System
 
@@ -151,6 +288,10 @@ In the event that any of our providers go down, we have no offline alternative t
 
 To fully stress test our solution, we should have both humans and AI generate invoices that are meant to trick our system. In doing so, our discriminator gets better at identifying passable invoices from ones that fail even when the discernability between an acceptable/rejectable invoice decreases.
 
+### Update Invoice Formatting for the Whole Business
+
+This agentic solution is a great short-term solution, but it's not a deterministic system and it has tremendous development upkeep. Long-term, I would pitch for Acme Corp to invest in creating a structured invoicing document that *must* be populated correctly before submission. This can easily turn this problem into one of software than one of AI Engineering, lowering the cost in the long-term. Clearly, the agentic solution is needed for right now because of the high error rate, high delays, and no auditing trail. However, investing in a strucutred invoice for the entire corporation going forward yields a simpler automation system to maintain while also increasing user accountability. Employees submitting invoices would interact directly with the required fields, making them more likely to notice inconsistencies, provide complete information, and explain exceptions when they arise.
+
 ## Evaluation Criteria
 
 - **Functionality** — Does the system work end-to-end? ✅
@@ -160,3 +301,5 @@ To fully stress test our solution, we should have both humans and AI generate in
 - **Presentation** — Clear translation of technical decisions to business impact ✅
 - **Above/Beyond** - Have you made it your own? Implemented additional features that make the solution feel great? Expanded assumptions? Added to test cases? ✅
 - **UI/UX** - Users will understand and enjoy using this system. ✅
+
+### Sample Full Run Output

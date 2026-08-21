@@ -1,6 +1,5 @@
 from langchain.chat_models import init_chat_model
 from langchain.messages import HumanMessage, SystemMessage
-from langchain.tools import tool
 from langchain_xai import ChatXAI
 from dotenv import load_dotenv
 

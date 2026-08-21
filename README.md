@@ -37,7 +37,9 @@ Our example dataset also contains replicates. For security purposes, we do not e
 
 ### Architecture
 
-![System Architecture Overview](output.png)
+<p align="center">
+  <img src="output.png" alt="System Architecture Overview" />
+</p>
 
 **Legend**
 
@@ -143,23 +145,23 @@ With this knowledge, we assess our performance on ALL 16 outcomes, but matching 
 ** Pay/Reject Results**
 
 | Invoice Number | File Format | Expected Processing Result | Our Output | Match? | Golden Example? |
-|---|---|---|---|---|---|
-| INV-1001 | `.txt` | SUCCESS | SUCCESS | ✅ | 🟡 |
-| INV-1002 | `.txt` | FAILURE | FAILURE | ✅ | 🟡 |
-| INV-1003 | `.txt` | FAILURE | FAILURE | ✅ | 🟡 |
-| INV-1004 | `.json` | SUCCESS | SUCCESS | ✅ | 🟡 |
-| INV-1005 | `.json` | FAILURE | FAILURE | ✅ |  |
-| INV-1006 | `.csv` | SUCCESS | SUCCESS | ✅ | 🟡 |
-| INV-1007 | `.csv` | FAILURE | FAILURE | ✅ |  |
-| INV-1008 | `.txt` | FAILURE | FAILURE | ✅ | 🟡 |
-| INV-1009 | `.json` | FAILURE | FAILURE | ✅ | 🟡 |
-| INV-1010 | `.txt` | SUCCESS | SUCCESS | ✅ |  |
-| INV-1011 | `.pdf` | SUCCESS | SUCCESS | ✅ |  |
-| INV-1012 | `.pdf` | FAILURE | FAILURE | ✅ |  |
-| INV-1013 | `.pdf` | FAILURE | FAILURE | ✅ |  |
-| INV-1014 | `.xml` | SUCCESS | SUCCESS | ✅ |  |
-| INV-1015 | `.csv` | SUCCESS | SUCCESS | ✅ |  |
-| INV-1016 | `.json` | FAILURE | FAILURE | ✅ | 🟡 |
+|---|---|---|---|:---:|:---:|
+| INV-1001 | `.txt` | SUCCESS | SUCCESS |   ✅   |   🟡   |
+| INV-1002 | `.txt` | FAILURE | FAILURE |   ✅   |   🟡   |
+| INV-1003 | `.txt` | FAILURE | FAILURE |   ✅   |   🟡   |
+| INV-1004 | `.json` | SUCCESS | SUCCESS |   ✅   |   🟡   |
+| INV-1005 | `.json` | FAILURE | FAILURE |   ✅   |        |
+| INV-1006 | `.csv` | SUCCESS | SUCCESS |   ✅   |   🟡   |
+| INV-1007 | `.csv` | FAILURE | FAILURE |   ✅   |        |
+| INV-1008 | `.txt` | FAILURE | FAILURE |   ✅   |   🟡   |
+| INV-1009 | `.json` | FAILURE | FAILURE |   ✅   |   🟡   |
+| INV-1010 | `.txt` | SUCCESS | SUCCESS |   ✅   |        |
+| INV-1011 | `.pdf` | SUCCESS | SUCCESS |   ✅   |        |
+| INV-1012 | `.pdf` | FAILURE | FAILURE |   ✅   |        |
+| INV-1013 | `.pdf` | FAILURE | FAILURE |   ✅   |        |
+| INV-1014 | `.xml` | SUCCESS | SUCCESS |   ✅   |        |
+| INV-1015 | `.csv` | SUCCESS | SUCCESS |   ✅   |        |
+| INV-1016 | `.json` | FAILURE | FAILURE |   ✅   |   🟡   |
 
 Our binary results indicate a good initial performance, but how can we know if our agent is making these decision for the right reasons? Our final output isn't just a go/no-go decision for processing invoices. Our system outputs the following schema:
 
@@ -221,23 +223,23 @@ It ensures structured, interpretable results for each invoice processed by the s
 Here is how the system performed when trying to predict the sublabel (i.e. the category of the failure).
 
 | Invoice Number | File Format | Expected Processing Sublabel | Our Output | Match? | Golden Example? |
-|---|---|---|---|---|---|
-| INV-1001 | `.txt` | SUCCESS | SUCCESS | ✅ | 🟡 |
-| INV-1002 | `.txt` | STOCK MISMATCH OR ITEM OUT OF STOCK | STOCK MISMATCH OR ITEM OUT OF STOCK | ✅ | 🟡 |
-| INV-1003 | `.txt` | ITEM OUT OF STOCK or MISSING OR SUSPICIOUS FIELD(S) | STOCK MISMATCH OR ITEM OUT OF STOCK | ✅ | 🟡 |
-| INV-1004 | `.json` | SUCCESS | SUCCESS | ✅ | 🟡 |
-| INV-1005 | `.json` | STOCK MISMATCH OR ITEM OUT OF STOCK | STOCK MISMATCH OR ITEM OUT OF STOCK | ✅ |  |
-| INV-1006 | `.csv` | SUCCESS | SUCCESS | ✅ | 🟡 |
-| INV-1007 | `.csv` | STOCK MISMATCH OR ITEM OUT OF STOCK | STOCK MISMATCH OR ITEM OUT OF STOCK | ✅ |  |
-| INV-1008 | `.txt` | NONEXISTENT ITEM | NONEXISTENT ITEM | ✅ | 🟡 |
-| INV-1009 | `.json` | INVALID QUANTITATIVE FIELD or MISSING OR SUSPICIOUS FIELD(S) | MISSING OR SUSPICIOUS FIELD(S) | ✅ | 🟡 |
-| INV-1010 | `.txt` | SUCCESS | SUCCESS | ✅ |  |
-| INV-1011 | `.pdf` | SUCCESS | SUCCESS | ✅ |  |
-| INV-1012 | `.pdf` | SUCCESS | SUCCESS | ✅ |  |
-| INV-1013 | `.pdf` | STOCK MISMATCH OR ITEM OUT OF STOCK | STOCK MISMATCH OR ITEM OUT OF STOCK | ✅ |  |
-| INV-1014 | `.xml` | SUCCESS | SUCCESS | ✅ |  |
-| INV-1015 | `.csv` | SUCCESS | SUCCESS | ✅ |  |
-| INV-1016 | `.json` | NONEXISTENT ITEM | NONEXISTENT ITEM | ✅ | 🟡 |
+|---|---|---|---|:---:|:---:|
+| INV-1001 | `.txt` | SUCCESS | SUCCESS |   ✅   |   🟡   |
+| INV-1002 | `.txt` | STOCK MISMATCH OR ITEM OUT OF STOCK | STOCK MISMATCH OR ITEM OUT OF STOCK |   ✅   |   🟡   |
+| INV-1003 | `.txt` | ITEM OUT OF STOCK or MISSING OR SUSPICIOUS FIELD(S) | STOCK MISMATCH OR ITEM OUT OF STOCK |   ✅   |   🟡   |
+| INV-1004 | `.json` | SUCCESS | SUCCESS |   ✅   |   🟡   |
+| INV-1005 | `.json` | STOCK MISMATCH OR ITEM OUT OF STOCK | STOCK MISMATCH OR ITEM OUT OF STOCK |   ✅   |        |
+| INV-1006 | `.csv` | SUCCESS | SUCCESS |   ✅   |   🟡   |
+| INV-1007 | `.csv` | STOCK MISMATCH OR ITEM OUT OF STOCK | STOCK MISMATCH OR ITEM OUT OF STOCK |   ✅   |        |
+| INV-1008 | `.txt` | NONEXISTENT ITEM | NONEXISTENT ITEM |   ✅   |   🟡   |
+| INV-1009 | `.json` | INVALID QUANTITATIVE FIELD or MISSING OR SUSPICIOUS FIELD(S) | MISSING OR SUSPICIOUS FIELD(S) |   ✅   |   🟡   |
+| INV-1010 | `.txt` | SUCCESS | SUCCESS |   ✅   |        |
+| INV-1011 | `.pdf` | SUCCESS | SUCCESS |   ✅   |        |
+| INV-1012 | `.pdf` | SUCCESS | SUCCESS |   ✅   |        |
+| INV-1013 | `.pdf` | STOCK MISMATCH OR ITEM OUT OF STOCK | STOCK MISMATCH OR ITEM OUT OF STOCK |   ✅   |        |
+| INV-1014 | `.xml` | SUCCESS | SUCCESS |   ✅   |        |
+| INV-1015 | `.csv` | SUCCESS | SUCCESS |   ✅   |        |
+| INV-1016 | `.json` | NONEXISTENT ITEM | NONEXISTENT ITEM |   ✅   |   🟡   |
 
 ## Running the System
 

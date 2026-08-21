@@ -40,8 +40,8 @@ from styles import CSS
 # Short labels for processing_result_sublabel
 SUBLABEL_COPY = {
     "SUCCESS": "Ready For Payment",
-    "STOCK MISMATCH": "Quantity Exceeds Stock",
-    "ITEM OUT OF STOCK": "Item Out Of Stock",
+    "STOCK MISMATCH OR ITEM OUT OF STOCK": "Quantity Exceeds Stock",
+    "STOCK MISMATCH OR ITEM OUT OF STOCK": "STOCK MISMATCH OR ITEM OUT OF STOCK",
     "NONEXISTENT ITEM": "Unknown Item",
     "INVALID QUANTITY": "Invalid Quantity",
 }

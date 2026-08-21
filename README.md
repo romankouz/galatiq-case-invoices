@@ -108,7 +108,7 @@ To run the system, you can use the following command-line options (as parsed in 
 
 - **Process a Single Invoice File:**
   ```bash
-  python main.py --invoice_path=data/invoices/invoice_1001.txt
+  python main.py --invoice-path=data/invoices/invoice_1001.txt
   ```
 
 - **Process All Invoices in the Dataset (default, no flags):**

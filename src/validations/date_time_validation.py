@@ -4,6 +4,9 @@ from langchain.tools import tool
 
 @tool
 def validate_datetime_str(datetime_str: str) -> bool:
+    """
+    Validate a datetime string is in a valid format.
+    """
     try:
         valid_formats = [
             "%Y-%m-%d",            # 2026-01-25

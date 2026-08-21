@@ -1,27 +1,11 @@
 [
     {
-        "invoice_number": "INV-1008",
-        "vendor_name": "NoProd Industries",
-        "amount": 9900.0,
+        "invoice_number": "INV-1004",
+        "vendor_name": "Precision Parts Ltd.",
+        "amount": 1890.0,
         "processing_result_accurate": true,
         "processing_result_sublabel_accurate": true,
-        "confidence_difference": -0.07999999999999996
-    },
-    {
-        "invoice_number": "INV-1009",
-        "vendor_name": "Unknown",
-        "amount": -250.0,
-        "processing_result_accurate": true,
-        "processing_result_sublabel_accurate": true,
-        "confidence_difference": -0.15000000000000002
-    },
-    {
-        "invoice_number": "INV-1003",
-        "vendor_name": "Fraudster LLC",
-        "amount": 100000.0,
-        "processing_result_accurate": true,
-        "processing_result_sublabel_accurate": false,
-        "confidence_difference": 0.04999999999999993
+        "confidence_difference": -0.030000000000000027
     },
     {
         "invoice_number": "INV-1006",
@@ -32,20 +16,36 @@
         "confidence_difference": -0.010000000000000009
     },
     {
-        "invoice_number": "INV-1001",
-        "vendor_name": "Widgets Inc.",
-        "amount": 5000.0,
+        "invoice_number": "INV-1003",
+        "vendor_name": "Fraudster LLC",
+        "amount": 100000.0,
         "processing_result_accurate": true,
         "processing_result_sublabel_accurate": true,
         "confidence_difference": 0.04999999999999993
     },
     {
-        "invoice_number": "INV-1004",
-        "vendor_name": "Precision Parts Ltd.",
-        "amount": 1890.0,
+        "invoice_number": "INV-1009",
+        "vendor_name": "null",
+        "amount": -250.0,
         "processing_result_accurate": true,
         "processing_result_sublabel_accurate": true,
-        "confidence_difference": -0.030000000000000027
+        "confidence_difference": -0.15000000000000002
+    },
+    {
+        "invoice_number": "INV-1008",
+        "vendor_name": "NoProd Industries",
+        "amount": 9900.0,
+        "processing_result_accurate": true,
+        "processing_result_sublabel_accurate": true,
+        "confidence_difference": -0.07999999999999996
+    },
+    {
+        "invoice_number": "INV-1016",
+        "vendor_name": "Widgets Inc.",
+        "amount": 3233.0,
+        "processing_result_accurate": true,
+        "processing_result_sublabel_accurate": true,
+        "confidence_difference": 0.15000000000000002
     },
     {
         "invoice_number": "INV-1002",
@@ -56,11 +56,11 @@
         "confidence_difference": 0.0
     },
     {
-        "invoice_number": "INV-1016",
+        "invoice_number": "INV-1001",
         "vendor_name": "Widgets Inc.",
-        "amount": 3233.0,
+        "amount": 5000.0,
         "processing_result_accurate": true,
         "processing_result_sublabel_accurate": true,
-        "confidence_difference": 0.15000000000000002
+        "confidence_difference": 0.04999999999999993
     }
 ]

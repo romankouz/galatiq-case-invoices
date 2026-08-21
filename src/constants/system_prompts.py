@@ -4,10 +4,25 @@ AUDITOR_PROMPT = """
 
     Verify features such as total being correctly calculated, total invoice quantities don't exceed inventory, requested items exist in inventory,
     and flag anything that looks suspicious or out of order with typical business practices.
+    Item names might be correct but represented slightly differently, so ensure the product is easily identifiable
+    and then check it's inventory level.
+
+    Some fields may be missing, but should only be flagged if they cannot be recreated by other fields.
+    For instance, a total can be calculated from the itemlist, or a subtotal and tax rate.
+    Others are missing with no way of being reconstructed and should be flagged.
+    The only required fields are the invoice_number, vendor_name, line_items, and total.
+    The other fields would be great to have, but should not be flagged as missing if the invoice can be completed normally.
+
+    Do not worry about the dates of the invoices unless you notice an inconsistency WITHIN the invoice.
+    Invoicing for past, present, or future is acceptable, as long as the dates don't conflict with what is possible within an invoice.
 """
 
 APPROVER_PROMPT = """
     You are an agent that leverages the current invoice information to determine if the invoice is valid and should be paid.
+
+    Refer to the auditor's report and determine the appropriate confidence for the decision made.
+    Ensure that an invoice cites one of the processing_result_sublabels and the reason lists ALL reasons for failure,
+    but MUST have something that cites the processing_result_sublabel.
 """
 
 CONSOLIDATOR_PROMPT = """

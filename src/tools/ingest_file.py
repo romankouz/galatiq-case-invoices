@@ -20,8 +20,8 @@ class MissingHeadersError(Exception):
     pass
 
 ALLOWED_EXTENSIONS = [
-    '.zip', '.pdf', '.json', '.jsonl', '.doc', 
-    '.docx', '.xlsx', '.xls', '.xml', '.csv', 
+    '.zip', '.pdf', '.json', '.jsonl', '.doc',
+    '.docx', '.xlsx', '.xls', '.xml', '.csv',
     '.tsv', '.txt', '.yaml', '.yml', '.md'
 ]
 
@@ -220,6 +220,13 @@ def _wide_table_to_invoice_state(
 
     invoice_kwargs["line_items"] = line_items or None
 
+    # Check required fields BEFORE building InvoiceState
+    required_fields = ["invoice_number", "vendor", "total", "line_items"]
+    if any(
+        invoice_kwargs.get(key) in [None, "", []] for key in required_fields
+    ):
+        return {"temp_structured_output": invoice_kwargs}
+
     try:
         return InvoiceState(**invoice_kwargs)
     except ValidationError:
@@ -302,29 +309,27 @@ def ingest_file(state: InputState) -> Union[dict, InvoiceState]:
                         os.remove(temp_file)
                         return result
         raise FileTypeError("No supported file found inside .zip")
- 
+
 
     raise FileTypeError(f"Could not parse file: {state.file_path}")
 
 def _populate_invoice_from_dict(data: dict) -> Union[InvoiceState, dict]:
     if not isinstance(data, dict):
         return InvoiceState()
-    # Define required fields (could expand as needed)
-    # Each entry in the list can be a list of possible field names for that property
+    # List of required logical keys and their possible aliases
     required_keys_options = {
         "invoice_number": ["invoice_number", "InvoiceNumber", "number"],
         "vendor": ["vendor", "Vendor"],
-        "date": ["date", "Date"],
         "total": ["total", "Total"],
         "line_items": ["line_items", "items"],
     }
-    missing = False
+    # Check if any required field is missing
+    missing_required = False
     for logical_key, options in required_keys_options.items():
-        if not any(opt in data and data[opt] not in [None, ""] for opt in options):
-            missing = True
+        if not any(opt in data and data[opt] not in [None, ""] and data[opt] != [] for opt in options):
+            missing_required = True
             break
-    if missing:
-        # Return as temp_structured_output so the LLM can resolve the mapping
+    if missing_required:
         return {"temp_structured_output": data}
 
     # Helper to resolve aliases with preference order

@@ -45,7 +45,6 @@ def reset_invoices_table():
         print("Failed to drop the invoices table.")
     finally:
         conn.close()
-   
 
 def insert_invoice_to_db(invoice: OutputState):
     """Insert an invoice into the database if it doesn't exist, else raise ValueError."""

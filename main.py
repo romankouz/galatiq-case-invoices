@@ -25,7 +25,7 @@ from src.model_schemas.overall import OverallState
 from src.evals.golden_dataset_verification import evaluate_golden_dataset, get_golden_dataset_results
 
 from src.tools.ingest_file import ingest_file
-from src.validations.finances import verify_total, verify_tax_calculation, verify_quantities
+from src.validations.finances import verify_total, verify_tax_calculation, verify_quantities, calculate_total
 from src.validations.date_time_validation import validate_datetime_str
 from src.tools.query_inventory import query_inventory
 from src.constants.constants import INVOICES_DIR, RESULTS_DIR
@@ -35,7 +35,8 @@ AVAILABLE_TOOLS = [
     verify_total,
     verify_tax_calculation,
     verify_quantities,
-    validate_datetime_str
+    validate_datetime_str,
+    calculate_total
 ]
 TOOLS_BY_NAME = {tool.name: tool for tool in AVAILABLE_TOOLS}
 
@@ -103,7 +104,7 @@ def argument_parser(argv: list[str]) -> argparse.Namespace:
     parser.add_argument("--reset-invoices", action="store_true", default=False, help="Reset the invoices table")
     parser.add_argument("--reset-inventory", action="store_true", default=False, help="Reset the inventory table")
     parser.add_argument("--test-only", action="store_true", default=False, help="Only run the test suite")
-    parser.add_argument("--invoice_path", type=str, default=None, help="Path to a single invoice file")
+    parser.add_argument("--invoice-path", type=str, default=None, help="Path to a single invoice file")
     return parser.parse_args(argv)
 
 def mock_payment(vendor, amount):

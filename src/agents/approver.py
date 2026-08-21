@@ -1,15 +1,11 @@
-from deepagents import create_deep_agent
-
 from langchain.chat_models import init_chat_model
 from langchain.messages import HumanMessage, SystemMessage
-from langchain.tools import tool
 from langchain_xai import ChatXAI
 from dotenv import load_dotenv
 
 from src.model_schemas.overall import OverallState
 from src.model_schemas.output import OutputState
 from src.constants.system_prompts import APPROVER_PROMPT
-from src.tools.query_inventory import query_inventory
 
 load_dotenv()
 
@@ -28,7 +24,7 @@ def approve_invoice(invoice: OverallState) -> OutputState:
     approver_agent = setup_approver_agent()
     return approver_agent.invoke(
         [
-            SystemMessage(content=APPROVER_PROMPT), 
+            SystemMessage(content=APPROVER_PROMPT),
             HumanMessage(
             content=f"""
                 Invoice:

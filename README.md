@@ -1,5 +1,9 @@
 # Galatiq Case: Invoice Processing Automation
 
+## Video Solution (Written Solution is Everything Below this Header)
+
+[Video Walkthrough & Demo](https://youtu.be/-ifU7jX_p1w)
+
 ## Background
 
 Acme Corp is a PE-backed manufacturing firm losing **$2M/year** on manual invoice processing. Invoices arrive via email as PDFs, txts, xmls, and other messy formats with frequent errors. Staff manually extract data, validate against a legacy inventory database (inconsistent), obtain VP approval (via email chains), and process payment (via a banking API).
@@ -309,3 +313,179 @@ This agentic solution is a great short-term solution, but it's not a determinist
 - **UI/UX** - Users will understand and enjoy using this system. ✅
 
 ### Sample Full Run Output
+
+Resetting invoices table...
+Creating invoices table...
+Invoices table created successfully.
+Processing invoice: invoice_1001.txt
+UNSTRUCTURED INGESTOR AGENT ACTIVATED
+CONSOLIDATOR AGENT ACTIVATED
+AUDITING AGENT ACTIVATED
+AUDITING AGENT ACTIVATED
+APPROVING AGENT ACTIVATED
+{'invoice_number': 'INV-1001', 'vendor_name': 'Widgets Inc.', 'amount': 5000.0, 'processing_result': 'SUCCESS', 'processing_result_sublabel': 'SUCCESS', 'reason': "The auditor's report confirms all required fields are present, line item calculations are accurate, inventory stock is sufficient for all items (WidgetA: 10 requested vs 15 available; WidgetB: 5 requested vs 10 available), dates are consistent, and there are no suspicious elements or inconsistencies. The recommendation is to approve for payment.", 'confidence': 0.95}
+====================================================================================================
+Processing invoice: invoice_1002.txt
+UNSTRUCTURED INGESTOR AGENT ACTIVATED
+CONSOLIDATOR AGENT ACTIVATED
+AUDITING AGENT ACTIVATED
+AUDITING AGENT ACTIVATED
+APPROVING AGENT ACTIVATED
+{'invoice_number': 'INV-1002', 'vendor_name': 'Gadgets Co.', 'amount': 15000.0, 'processing_result': 'FAILURE', 'processing_result_sublabel': 'STOCK MISMATCH OR ITEM OUT OF STOCK', 'reason': 'Quantity Check: FAIL – Requested 20 units of GadgetX, but only 5 available in stock. This exceeds inventory levels. (STOCK MISMATCH OR ITEM OUT OF STOCK). Other aspects like totals, tax, and item existence are valid, but suspicious elements (misspellings, abbreviations) noted though not definitive for failure.', 'confidence': 0.9}    
+====================================================================================================
+Processing invoice: invoice_1003.txt
+UNSTRUCTURED INGESTOR AGENT ACTIVATED
+CONSOLIDATOR AGENT ACTIVATED
+AUDITING AGENT ACTIVATED
+AUDITING AGENT ACTIVATED
+APPROVING AGENT ACTIVATED
+{'invoice_number': 'INV-1003', 'vendor_name': 'Fraudster LLC', 'amount': 100000.0, 'processing_result': 'FAILURE', 'processing_result_sublabel': 'STOCK MISMATCH OR ITEM OUT OF STOCK', 'reason': 'STOCK MISMATCH OR ITEM OUT OF STOCK: Requested quantity (100) exceeds available stock (0) for item "FakeItem". Also, suspicious vendor name ("Fraudster LLC"), urgent/scammy notes ("URGENT - Pay immediately... Wire transfer preferred."), invalid due date ("yesterday"), and future invoice date (2026) contribute to fraud indicators. No critical fields missing, totals calculate correctly.', 'confidence': 0.95}
+====================================================================================================
+Processing invoice: invoice_1004.json
+CONSOLIDATOR AGENT ACTIVATED
+AUDITING AGENT ACTIVATED
+AUDITING AGENT ACTIVATED
+APPROVING AGENT ACTIVATED
+{'invoice_number': 'INV-1004', 'vendor_name': 'Precision Parts Ltd.', 'amount': 1890.0, 'processing_result': 'SUCCESS', 'processing_result_sublabel': 'SUCCESS', 'reason': "The auditor's report confirms all required fields are present, items exist in inventory with sufficient stock (WidgetA: 15>3, WidgetB: 10>2), quantities are valid, all calculations (line items, subtotal, tax, total) are correct, dates are consistent, no suspicious elements, and the recommendation is to approve for payment.", 'confidence': 0.95}
+====================================================================================================
+Processing invoice: invoice_1004_revised.json
+CONSOLIDATOR AGENT ACTIVATED
+AUDITING AGENT ACTIVATED
+AUDITING AGENT ACTIVATED
+APPROVING AGENT ACTIVATED
+C:\Users\Owner\Documents\Employment Documents\galatiq-case-invoices\data\invoices.py:59: UserWarning: Invoice 'INV-1004' already exists in the database. Skipping this invoice.
+  warnings.warn(f"Invoice '{invoice_number}' already exists in the database. Skipping this invoice.")
+Invoice 'INV-1004' already exists in the database. Cannot process it again.
+Processing invoice: invoice_1005.json
+CONSOLIDATOR AGENT ACTIVATED
+AUDITING AGENT ACTIVATED
+AUDITING AGENT ACTIVATED
+APPROVING AGENT ACTIVATED
+{'invoice_number': 'INV-1005', 'vendor_name': 'Global Supply Chain Partners', 'amount': 15225.0, 'processing_result': 'FAILURE', 'processing_result_sublabel': 'STOCK MISMATCH OR ITEM OUT OF STOCK', 'reason': 'STOCK MISMATCH OR ITEM OUT OF STOCK: GadgetX requested 8 but only 5 available in inventory. Other items (WidgetA and WidgetB) have sufficient stock. Calculations and totals are verified as correct. Some fields are missing (bill_to, shipping, notes, revision, individual line item amounts) but are reconstructible and not suspicious.', 'confidence': 0.95}
+====================================================================================================
+Processing invoice: invoice_1006.csv
+AUDITING AGENT ACTIVATED
+AUDITING AGENT ACTIVATED
+APPROVING AGENT ACTIVATED
+{'invoice_number': 'INV-1006', 'vendor_name': 'Acme Industrial Supplies', 'amount': 2750.0, 'processing_result': 'SUCCESS', 'processing_result_sublabel': 'SUCCESS', 'reason': "The auditor's report confirms all required fields are present, items exist in inventory, quantities are valid and within stock, total and tax calculations are correct, and there are no suspicious items or anomalies. The invoice is fully valid and should be approved for payment.", 'confidence': 0.95}
+====================================================================================================
+Processing invoice: invoice_1007.csv
+CONSOLIDATOR AGENT ACTIVATED
+AUDITING AGENT ACTIVATED
+AUDITING AGENT ACTIVATED
+APPROVING AGENT ACTIVATED
+{'invoice_number': 'INV-1007', 'vendor_name': 'MegaWidgets Corp', 'amount': 14750.0, 'processing_result': 'FAILURE', 'processing_result_sublabel': 'STOCK MISMATCH OR ITEM OUT OF STOCK', 'reason': 'The invoice is invalid primarily due to over-ordering on inventory (WidgetA and WidgetB). Quantities exceed inventory: WidgetA requested 20 but only 15 in stock, WidgetB requested 15 but only 10 in stock. This violates business practices and should prevent payment. Additionally, total is missing (though calculable as 14750).', 'confidence': 0.9}
+====================================================================================================
+Processing invoice: invoice_1008.txt
+UNSTRUCTURED INGESTOR AGENT ACTIVATED
+CONSOLIDATOR AGENT ACTIVATED
+AUDITING AGENT ACTIVATED
+AUDITING AGENT ACTIVATED
+APPROVING AGENT ACTIVATED
+{'invoice_number': 'INV-1008', 'vendor_name': 'NoProd Industries', 'amount': 9900.0, 'processing_result': 'FAILURE', 'processing_result_sublabel': 'NONEXISTENT ITEM', 'reason': 'The items requested ("SuperGizmo" and "MegaSprocket") have no matching entries in the inventory database (query_inventory returned None for each; verify_quantities shows empty candidate matches and invalid quantities). This is a critical flag: Requested items do not exist in inventory, and quantities cannot be validated against stock levels. This violates business practices for a legitimate invoice. Calculations and required fields are otherwise correct.', 'confidence': 0.9}
+====================================================================================================
+Processing invoice: invoice_1009.json
+CONSOLIDATOR AGENT ACTIVATED
+AUDITING AGENT ACTIVATED
+AUDITING AGENT ACTIVATED
+APPROVING AGENT ACTIVATED
+{'invoice_number': 'INV-1009', 'vendor_name': 'null', 'amount': -250.0, 'processing_result': 'FAILURE', 'processing_result_sublabel': 'MISSING OR SUSPICIOUS FIELD(S)', 'reason': 'missing vendor name; mismatched total (calculated 1000.0 vs provided -250.0); suspicious negative total and quantity (possible undocumented credit/refund)', 'confidence': 0.85}
+====================================================================================================
+Processing invoice: invoice_1010.txt
+UNSTRUCTURED INGESTOR AGENT ACTIVATED
+CONSOLIDATOR AGENT ACTIVATED
+AUDITING AGENT ACTIVATED
+AUDITING AGENT ACTIVATED
+AUDITING AGENT ACTIVATED
+APPROVING AGENT ACTIVATED
+{'invoice_number': 'INV-1010', 'vendor_name': 'Consolidated Materials Group', 'amount': 7185.0, 'processing_result': 'SUCCESS', 'processing_result_sublabel': 'SUCCESS', 'reason': "The auditor's report confirms all required fields are present, items are identifiable (including fuzzy matching for variants), quantities are within inventory limits (with aggregation for WidgetA variants), all calculations (line items, subtotal, tax, total) match and pass verification functions, dates are consistent with terms, and no suspicious patterns exist. Conclusion: fully valid and approved for payment.", 'confidence': 0.95}
+====================================================================================================
+Processing invoice: invoice_1011.pdf
+UNSTRUCTURED INGESTOR AGENT ACTIVATED
+CONSOLIDATOR AGENT ACTIVATED
+AUDITING AGENT ACTIVATED
+AUDITING AGENT ACTIVATED
+APPROVING AGENT ACTIVATED
+{'invoice_number': 'INV-1011', 'vendor_name': 'Summit Manufacturing Co.', 'amount': 3000.0, 'processing_result': 'SUCCESS', 'processing_result_sublabel': 'SUCCESS', 'reason': "The auditor's report confirms all required fields are present, items match inventory directly, totals and tax calculations are correct, quantities are within available stock, and no suspicious elements or inconsistencies exist. The recommendation is to approve for payment.", 'confidence': 0.95}
+====================================================================================================
+Processing invoice: invoice_1011.txt
+UNSTRUCTURED INGESTOR AGENT ACTIVATED
+CONSOLIDATOR AGENT ACTIVATED
+AUDITING AGENT ACTIVATED
+AUDITING AGENT ACTIVATED
+APPROVING AGENT ACTIVATED
+C:\Users\Owner\Documents\Employment Documents\galatiq-case-invoices\data\invoices.py:59: UserWarning: Invoice 'INV-1011' already exists in the database. Skipping this invoice.
+  warnings.warn(f"Invoice '{invoice_number}' already exists in the database. Skipping this invoice.")
+Invoice 'INV-1011' already exists in the database. Cannot process it again.
+Processing invoice: invoice_1012.pdf
+UNSTRUCTURED INGESTOR AGENT ACTIVATED
+CONSOLIDATOR AGENT ACTIVATED
+AUDITING AGENT ACTIVATED
+AUDITING AGENT ACTIVATED
+APPROVING AGENT ACTIVATED
+{'invoice_number': 'INV 1012', 'vendor_name': 'QuickShip Distributers (formerly FastShip Ltd.)', 'amount': 9975.0, 'processing_result': 'SUCCESS', 'processing_result_sublabel': 'SUCCESS', 'reason': "The auditor's report confirms all required fields are present, items match inventory with sufficient stock, all calculations (line items, subtotal, tax, total) are correct, minor typos and vendor name variation are non-suspicious, and there are no red flags. Recommendation is to approve for payment.", 'confidence': 0.95}       
+====================================================================================================
+Processing invoice: invoice_1012.txt
+UNSTRUCTURED INGESTOR AGENT ACTIVATED
+CONSOLIDATOR AGENT ACTIVATED
+AUDITING AGENT ACTIVATED
+AUDITING AGENT ACTIVATED
+APPROVING AGENT ACTIVATED
+C:\Users\Owner\Documents\Employment Documents\galatiq-case-invoices\data\invoices.py:59: UserWarning: Invoice 'INV 1012' already exists in the database. Skipping this invoice.
+  warnings.warn(f"Invoice '{invoice_number}' already exists in the database. Skipping this invoice.")
+Invoice 'INV 1012' already exists in the database. Cannot process it again.
+Processing invoice: invoice_1013.json
+CONSOLIDATOR AGENT ACTIVATED
+AUDITING AGENT ACTIVATED
+AUDITING AGENT ACTIVATED
+APPROVING AGENT ACTIVATED
+{'invoice_number': 'INV-1013', 'vendor_name': 'Atlas Industrial Supply', 'amount': 22562.8, 'processing_result': 'FAILURE', 'processing_result_sublabel': 'STOCK MISMATCH OR ITEM OUT OF STOCK', 'reason': 'Quantities exceed inventory for WidgetA (22>15), WidgetB (18>10), GadgetX (9>5); total mismatch (22562.8 vs expected 22512.8); missing bill_to field.', 'confidence': 0.9}
+====================================================================================================
+Processing invoice: invoice_1013.pdf
+UNSTRUCTURED INGESTOR AGENT ACTIVATED
+CONSOLIDATOR AGENT ACTIVATED
+AUDITING AGENT ACTIVATED
+AUDITING AGENT ACTIVATED
+APPROVING AGENT ACTIVATED
+C:\Users\Owner\Documents\Employment Documents\galatiq-case-invoices\data\invoices.py:59: UserWarning: Invoice 'INV-1013' already exists in the database. Skipping this invoice.
+  warnings.warn(f"Invoice '{invoice_number}' already exists in the database. Skipping this invoice.")
+Invoice 'INV-1013' already exists in the database. Cannot process it again.
+Processing invoice: invoice_1014.xml
+CONSOLIDATOR AGENT ACTIVATED
+AUDITING AGENT ACTIVATED
+AUDITING AGENT ACTIVATED
+APPROVING AGENT ACTIVATED
+{'invoice_number': 'INV-1014', 'vendor_name': 'TechParts International', 'amount': 4125.0, 'processing_result': 'SUCCESS', 'processing_result_sublabel': 'SUCCESS', 'reason': "The auditor's report confirms all required fields are present, items exist in inventory with sufficient stock (WidgetA: 4 ≤ 15, WidgetB: 6 ≤ 10), all calculations are correct (line items, subtotal, tax, total), dates are consistent with payment terms, and there are no red flags. The invoice is valid and ready for payment.", 'confidence': 0.95}        
+====================================================================================================
+Processing invoice: invoice_1015.csv
+CONSOLIDATOR AGENT ACTIVATED
+AUDITING AGENT ACTIVATED
+AUDITING AGENT ACTIVATED
+APPROVING AGENT ACTIVATED
+{'invoice_number': 'INV-1015', 'vendor_name': 'Reliable Components Inc.', 'amount': 6500.0, 'processing_result': 'SUCCESS', 'processing_result_sublabel': 'SUCCESS', 'reason': "The auditor's report confirms all required fields are present, calculations for line items, subtotal, tax, and total are accurate, inventory checks show sufficient stock for all items (WidgetA: 10/15, WidgetB: 5/10, GadgetX: 2/5), dates are consistent, and no suspicious patterns or missing fields. Recommendation is to approve for payment.", 'confidence': 0.95}
+====================================================================================================
+Processing invoice: invoice_1016.json
+CONSOLIDATOR AGENT ACTIVATED
+AUDITING AGENT ACTIVATED
+AUDITING AGENT ACTIVATED
+APPROVING AGENT ACTIVATED
+{'invoice_number': 'INV-1016', 'vendor_name': 'Widgets Inc.', 'amount': 3233.0, 'processing_result': 'FAILURE', 'processing_result_sublabel': 'NONEXISTENT ITEM', 'reason': 'WidgetC is not found in inventory (no matching record found, even with fuzzy matching). Requested quantity cannot be fulfilled. This is a critical issue that prevents full order fulfillment.', 'confidence': 0.9}
+====================================================================================================
+Paid 5000.0 to Widgets Inc.
+Rejected 15000.0 from Gadgets Co.
+Rejected 100000.0 from Fraudster LLC
+Paid 1890.0 to Precision Parts Ltd.
+Rejected 15225.0 from Global Supply Chain Partners
+Paid 2750.0 to Acme Industrial Supplies
+Rejected 14750.0 from MegaWidgets Corp
+Rejected 9900.0 from NoProd Industries
+Rejected -250.0 from null
+Paid 7185.0 to Consolidated Materials Group
+Paid 3000.0 to Summit Manufacturing Co.
+Paid 9975.0 to QuickShip Distributers (formerly FastShip Ltd.)
+Rejected 22562.8 from Atlas Industrial Supply
+Paid 4125.0 to TechParts International
+Paid 6500.0 to Reliable Components Inc.
+Rejected 3233.0 from Widgets Inc.
+Received predictions: ['INV-1004', 'INV-1006', 'INV-1003', 'INV-1009', 'INV-1008', 'INV-1016', 'INV-1002', 'INV-1001']
+{'accuracy': 1.0, 'sublabel_accuracy': 1.0, 'confidence_difference': -0.002500000000000016}

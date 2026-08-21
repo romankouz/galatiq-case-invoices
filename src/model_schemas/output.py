@@ -16,7 +16,13 @@ class OutputState(BaseModel):
     vendor_name: str
     amount: float
     processing_result: Literal["SUCCESS", "FAILURE"]
-    processing_result_sublabel: Literal["SUCCESS", "STOCK MISMATCH OR ITEM OUT OF STOCK", "NONEXISTENT ITEM", "INVALID QUANTITATIVE FIELD", "MISSING OR SUSPICIOUS FIELD(S)"]
+    processing_result_sublabel: Literal[
+        "SUCCESS", 
+        "STOCK MISMATCH OR ITEM OUT OF STOCK", 
+        "NONEXISTENT ITEM", 
+        "INVALID QUANTITATIVE FIELD", 
+        "MISSING OR SUSPICIOUS FIELD(S)"
+    ]
     reason: str
     confidence: float = Field(..., ge=0, le=1)
 

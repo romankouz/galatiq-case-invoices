@@ -280,11 +280,15 @@ You can manually upload your invoices [on this dashboard](https://romankouz-gala
 
 ## Future Work
 
-While our MVP indicates that leverage a multi-agent framework for invoice processing is a promising direction, there are immediate steps we can take to improve the current system.
+While our MVP indicates that leveraging a multi-agent framework for invoice processing is a promising direction, there are immediate steps we can take to improve the current system.
 
 ### Offline Fallback
 
 In the event that any of our providers go down, we have no offline alternative to locally run our pipeline. Finding a suitable but small model from HuggingFace and using it if leveraging xAI's models is ever ineffective helps maintain uptime.
+
+### Additional String Validation
+
+The string validations for vendor names and line items is primarliy based on the faulty examples in the invoices dataset. There are likely substantial additions to make. If a product name had a previous name it went by, or a typo occurred but it was clear what the user meant to put in the invoice, those features are not presently supported.
 
 ### Generator/Discriminator Training
 
